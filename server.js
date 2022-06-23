@@ -6,13 +6,16 @@ const yargs = require('yargs/yargs')(process.argv.slice(2))
 const args = yargs.default({ puerto:8080, modo:'FORK' }).argv;
 const cpus = require('os').cpus().length;
 const cluster = require('cluster');
+const log4js = require('./utils/logs');
+const logConsole = log4js.getLogger('consola');
+const logWarn = log4js.getLogger('warn');
 
 // importacion e instancia de la clase Chat
-const Chat = require('./js/chat');
+const Chat = require('./utils/chat');
 const chat = new Chat();
 
 // importacion e instancia de la clase Productos
-const Productos = require('./js/productos');
+const Productos = require('./utils/productos');
 const productos = new Productos();
 
 // importacion de routers
@@ -37,12 +40,16 @@ app.use('/',indexRouter);
 app.use('/register',registerRouter);
 app.use('/info',infoRouter);
 app.use('/api/randoms',randomsRouter);
+app.use((req, res, next) => { 
+    logWarn.warn(`Ruta ${req.url} método ${req.method} no implementados`);
+    res.status(404).json({error: 404, descripcion: `Ruta ${req.url} método ${req.method} no implementados`});
+})
 
 // sockets
 io.on('connection',async (socket) => {
 
     //mensaje de usuario conectado
-    console.log('Usuario conectado'); 
+    logConsole.info('Usuario conectado');
 
     // socket para productos con faker
     socket.emit('productosFaker',productos.RandomProducts());

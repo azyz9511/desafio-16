@@ -4,7 +4,7 @@ const session = require('express-session');
 const passport = require('passport');
 const localStrategy = require('passport-local').Strategy;
 const connectMongo = require('connect-mongo');
-const Usuario = require('../js/usuarios');
+const Usuario = require('../utils/usuarios');
 const usuario = new Usuario();
 require('dotenv').config();
 
